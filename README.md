@@ -1,4 +1,4 @@
-toni app
+tonic app
 ===================================
 
 Android app (Java) to learn networking in Android.
