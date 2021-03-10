@@ -1,6 +1,7 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,19 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         holder.magnitude.setText(quake.getMagnitude());
         holder.date.setText(quake.getDate());
         holder.place.setText(quake.getPlace());
+        holder.town.setText(quake.getTown());
+
+        Double magValue = Double.parseDouble(holder.magnitude.getText().toString());
+
+        if(magValue < 4){
+            holder.magnitude.setTextColor(Color.GREEN);
+        } else if(magValue >= 4 && magValue < 6) {
+            holder.magnitude.setTextColor(Color.GRAY);
+        }else if(magValue >= 6 && magValue < 8){
+            holder.magnitude.setTextColor(Color.rgb(249, 192, 99));
+        } else {
+            holder.magnitude.setTextColor(Color.RED);
+        }
     }
 
     @Override
@@ -44,12 +58,14 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         private TextView magnitude;
         private TextView place;
         private TextView date;
+        private TextView town;
 
         public MainViewHolder(@NonNull View itemView) {
             super(itemView);
             magnitude = itemView.findViewById(R.id.mag_view);
             place = itemView.findViewById(R.id.location_view);
             date = itemView.findViewById(R.id.date_view);
+            town = itemView.findViewById(R.id.town);
 
         }
     }

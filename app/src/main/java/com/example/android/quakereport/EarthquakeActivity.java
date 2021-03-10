@@ -42,19 +42,7 @@ public class EarthquakeActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.main_recycler);
 
         // Create a fake list of earthquake locations.
-        List<TonicQuake> quakes = new ArrayList<TonicQuake>(10);
-        String[] places = new String[]{"San Francisco", "London", "Tokyo", "Mexico City"};
-        String[] dates = new String[]{"Feb, 2021", "March, 2020", "April, 2010", "January, 2013"};
-        String[] magnitudes = new String[]{"3.2", "4.5", "9.0", "1.4"};
-        for(int i = 0; i < places.length; i++){
-            TonicQuake quake = new TonicQuake();
-            quake.setPlace(places[i]);
-            quake.setDate(dates[i]);
-            quake.setMagnitude(magnitudes[i]);
-
-            quakes.add(quake);
-        }
-
+        List<TonicQuake> quakes = QuakeUtils.extractEarthquakes();
 
         mMainRecyclerAdapter = new MainRecyclerAdapter(quakes, this);
         mRecyclerView.setAdapter(mMainRecyclerAdapter);
