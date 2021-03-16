@@ -15,24 +15,24 @@
  */
 package com.example.android.quakereport;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import com.example.android.quakereport.utils.NetworkUtils;
+import com.example.android.quakereport.utils.QuakeUtils;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.net.URL;
 import java.util.List;
-import java.util.Queue;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     private RecyclerView mRecyclerView;
     private MainRecyclerAdapter mMainRecyclerAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,23 +41,33 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         mRecyclerView = findViewById(R.id.main_recycler);
 
-        // Create a fake list of earthquake locations.
-        List<TonicQuake> quakes = QuakeUtils.extractEarthquakes();
+        mLayoutManager = new LinearLayoutManager(this);
 
-        mMainRecyclerAdapter = new MainRecyclerAdapter(quakes, this);
-        mRecyclerView.setAdapter(mMainRecyclerAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        new QuakeAsynkTask().execute();
 
 
-        // Find a reference to the {@link ListView} in the layout
-//        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+    }
 
-        // Create a new {@link ArrayAdapter} of earthquakes
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-//                this, android.R.layout.simple_list_item_1, earthquakes);
+    private class QuakeAsynkTask extends AsyncTask<URL, Void, List<TonicQuake>> {
 
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-//        earthquakeListView.setAdapter(adapter);
+        @Override
+        protected List<TonicQuake> doInBackground(URL... urls) {
+            List<TonicQuake> tonicQuakes = QuakeUtils.extractEarthquakes();
+            return tonicQuakes;
+        }
+
+
+        @Override
+        protected void onPostExecute(List<TonicQuake> tonicQuakes) {
+            super.onPostExecute(tonicQuakes);
+            updateUI(tonicQuakes);
+        }
+
+        private void updateUI(List<TonicQuake> tonicQuakes) {
+            mMainRecyclerAdapter = new MainRecyclerAdapter(tonicQuakes, EarthquakeActivity.this);
+            mRecyclerView.setAdapter(mMainRecyclerAdapter);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }
+
     }
 }
