@@ -15,19 +15,24 @@
  */
 package com.example.android.quakereport;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android.quakereport.utils.NetworkUtils;
 import com.example.android.quakereport.utils.QuakeUtils;
 
-import java.net.URL;
 import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity
+implements LoaderManager.LoaderCallbacks<List<TonicQuake>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     private RecyclerView mRecyclerView;
@@ -43,31 +48,60 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         mLayoutManager = new LinearLayoutManager(this);
 
-        new QuakeAsynkTask().execute();
-
+        getSupportLoaderManager().initLoader(0, null, this);
 
     }
 
-    private class QuakeAsynkTask extends AsyncTask<URL, Void, List<TonicQuake>> {
+    private void updateUI(List<TonicQuake> tonicQuakes) {
+        mMainRecyclerAdapter = new MainRecyclerAdapter(tonicQuakes, EarthquakeActivity.this);
+        mRecyclerView.setAdapter(mMainRecyclerAdapter);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+
+    @NonNull
+    @Override
+    public Loader<List<TonicQuake>> onCreateLoader(int id, @Nullable Bundle args) {
+        return new QuakeDataLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<List<TonicQuake>> loader, List<TonicQuake> data) {
+        updateUI(data);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<List<TonicQuake>> loader) {
+
+    }
+
+    public static class QuakeDataLoader extends AsyncTaskLoader<List<TonicQuake>> {
+        private List<TonicQuake> mQuakeData;
+
+        public QuakeDataLoader(@NonNull Context context) {
+            super(context);
+        }
 
         @Override
-        protected List<TonicQuake> doInBackground(URL... urls) {
-            List<TonicQuake> tonicQuakes = QuakeUtils.extractEarthquakes();
-            return tonicQuakes;
+        protected void onStartLoading() {
+            super.onStartLoading();
+            if(mQuakeData == null){
+                forceLoad();
+            } else{
+                deliverResult(mQuakeData);
+            }
         }
 
+        @Nullable
+        @Override
+        public List<TonicQuake> loadInBackground() {
+            return QuakeUtils.extractEarthquakes();
+        }
 
         @Override
-        protected void onPostExecute(List<TonicQuake> tonicQuakes) {
-            super.onPostExecute(tonicQuakes);
-            updateUI(tonicQuakes);
+        public void deliverResult(@Nullable List<TonicQuake> data) {
+            mQuakeData = data;
+            super.deliverResult(data);
         }
-
-        private void updateUI(List<TonicQuake> tonicQuakes) {
-            mMainRecyclerAdapter = new MainRecyclerAdapter(tonicQuakes, EarthquakeActivity.this);
-            mRecyclerView.setAdapter(mMainRecyclerAdapter);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-        }
-
     }
 }

@@ -16,16 +16,18 @@ public class NetworkUtils {
 
 
     private static final String BASE_USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?";
+    public static final int DURATION = 40;
 
 
     private static String buildURL() {
-        String startTime = formartDate(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2)));
+        String startTime = formartDate(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(DURATION)));
         String endTime = formartDate(new Date());
         Uri.Builder builder = Uri.parse(BASE_USGS_URL).buildUpon()
                 .appendQueryParameter("format", "geojson")
                 .appendQueryParameter("starttime", startTime)
                 .appendQueryParameter("endtime", endTime)
-                .appendQueryParameter("orderby", "magnitude");
+                .appendQueryParameter("orderby", "magnitude")
+                .appendQueryParameter("minmagnitude", "4.5");
 
         String baseUrl = builder.build().toString();
         return baseUrl;
