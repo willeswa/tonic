@@ -38,9 +38,9 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
         Double magValue = Double.parseDouble(holder.magnitude.getText().toString());
 
-        if(magValue < 4){
+        if(magValue < 5){
             holder.magnitude.setTextColor(Color.GREEN);
-        } else if(magValue >= 4 && magValue < 6) {
+        } else if(magValue >= 5 && magValue < 6) {
             holder.magnitude.setTextColor(Color.GRAY);
         }else if(magValue >= 6 && magValue < 8){
             holder.magnitude.setTextColor(Color.rgb(249, 192, 99));
