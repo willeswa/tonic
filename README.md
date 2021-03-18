@@ -1,14 +1,17 @@
-tonic app
-===================================
+# Tonic
 
-Android app (Java) to learn networking in Android.
-Displays earthquake information by consuming: 
+An Android app (Java) to learn networking in Android. It displays earthquake information by consuming the [USGS](https://earthquake.usgs.gov/fdsnws/event/1/) API to display real time earthquake data.
 
-- https://earthquake.usgs.gov/fdsnws/event/1/
+Min API Level: 21
 
-Pre-requisites
---------------
+## Components
+- [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) - for dynamic high performance list.
+- [Loaders](https://developer.android.com/guide/components/loaders) - for managing operations off the main UI thread.
+- [ConstraintLayout](https://developer.android.com/reference/androidx/constraintlayout/widget/ConstraintLayout) - for creating high performing complex views
 
-- Android SDK v23
-- Android Build Tools v23.0.2
-- Android Support Repository v23.3.0
+## Libraries
+- [OkHttp](https://square.github.io/okhttp/) - for network requests.
+
+
+## Demo
+|<img src="art/loading.png" width=200/>|<img src="home/sh2.png" width=200/>|<img src="art/empty_state.png" width=200/>|
