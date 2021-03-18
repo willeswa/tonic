@@ -27,7 +27,7 @@ public class NetworkUtils {
                 .appendQueryParameter("starttime", startTime)
                 .appendQueryParameter("endtime", endTime)
                 .appendQueryParameter("orderby", "magnitude")
-                .appendQueryParameter("minmagnitude", "4.5");
+                .appendQueryParameter("minmagnitude", "50");
 
         String baseUrl = builder.build().toString();
         return baseUrl;
