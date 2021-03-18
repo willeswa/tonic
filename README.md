@@ -14,4 +14,4 @@ Min API Level: 21
 
 
 ## Demo
-|<img src="art/loading.png" width=200/>|<img src="home/sh2.png" width=200/>|<img src="art/empty_state.png" width=200/>|
+|<img src="art/loading.png" width=200/>|<img src="art/home.png" width=200/>|<img src="art/empty_state.png" width=200/>|
