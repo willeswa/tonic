@@ -16,7 +16,15 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +43,14 @@ public class EarthquakeActivity extends AppCompatActivity
 implements LoaderManager.LoaderCallbacks<List<TonicQuake>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    private static final String TAG = EarthquakeActivity.class.getName();
     private RecyclerView mRecyclerView;
     private MainRecyclerAdapter mMainRecyclerAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private TextView emptyView;
+    private ImageView earth;
+    private ProgressBar progress;
+    private boolean mIsConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,26 +61,66 @@ implements LoaderManager.LoaderCallbacks<List<TonicQuake>> {
 
         mLayoutManager = new LinearLayoutManager(this);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        emptyView = findViewById(R.id.empty_state);
+        earth = findViewById(R.id.earth);
+        progress = findViewById(R.id.progress_circular);
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+        mIsConnected = activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+
+        if(mIsConnected) {
+            getSupportLoaderManager().initLoader(0, null, this);
+        } else {
+            hideViews(earth, emptyView);
+            Toast toast = Toast.makeText(EarthquakeActivity.this, R.string.no_internet, Toast.LENGTH_LONG);
+            toast.show();
+        }
+
 
     }
 
     private void updateUI(List<TonicQuake> tonicQuakes) {
-        mMainRecyclerAdapter = new MainRecyclerAdapter(tonicQuakes, EarthquakeActivity.this);
-        mRecyclerView.setAdapter(mMainRecyclerAdapter);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+
+            hideViews(earth, emptyView);
+            showViews(mRecyclerView);
+            mMainRecyclerAdapter = new MainRecyclerAdapter(tonicQuakes, EarthquakeActivity.this);
+            mRecyclerView.setAdapter(mMainRecyclerAdapter);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
+    }
+
+    private void hideViews(View... views){
+        for(View view: views){
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    private void showViews(View... views){
+        for(View view: views){
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
 
     @NonNull
     @Override
     public Loader<List<TonicQuake>> onCreateLoader(int id, @Nullable Bundle args) {
+        showViews(progress);
+        hideViews(emptyView, earth);
+
         return new QuakeDataLoader(this);
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<TonicQuake>> loader, List<TonicQuake> data) {
-        updateUI(data);
+        hideViews(progress);
+        if(data.size() > 0){
+            updateUI(data);
+        } else if(data != null){
+            hideViews(mRecyclerView);
+            showViews(earth, emptyView);
+        }
     }
 
     @Override
